@@ -1194,7 +1194,7 @@ function setFilterNew2(link) {
 }
 
 function setFilterNew3(post) {
-    if (!!post.querySelector(FILTER_NEW)) {
+    if (!post || !!post.querySelector(FILTER_NEW)) {
         filterOneNew();
     } else {
         window.setTimeout(() => setFilterNew3(post), 100);
