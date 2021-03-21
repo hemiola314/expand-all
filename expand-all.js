@@ -709,6 +709,14 @@ class Dom {
         return words.some(re => { return s.match(re) != null; });
     }
 
+    static hasTextHide(s) {
+        const words = [
+            /^Hide%20/  // English (en_US and en_GB)
+        ];
+
+        return words.some(re => { return s.match(re) != null; });
+    }
+
     static hasTextShare(s) {
         const words = [
             /%20Share$/,   // English (en_US, en_GB, pa_IN, or_IN)
@@ -926,8 +934,11 @@ function getCommentsOrReplies(comments, onDone) {
                     item = item.parentNode.parentNode;
                     let x = Dom.childIndex(item.parentNode);
                     let skip = x[0] == 0 && x[1] != 1;
+
                     if (skip) {
                         skip = !Dom.hasTextView(item.textContent);
+                    } else {
+                        skip = Dom.hasTextHide(item.textContent);
                     }
 
                     return !skip;
