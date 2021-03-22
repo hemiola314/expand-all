@@ -709,14 +709,6 @@ class Dom {
         return words.some(re => { return s.match(re) != null; });
     }
 
-    static hasTextHide(s) {
-        const words = [
-            /^Hide%20/  // English (en_US and en_GB)
-        ];
-
-        return words.some(re => { return s.match(re) != null; });
-    }
-
     static hasTextShare(s) {
         const words = [
             /%20Share$/,   // English (en_US, en_GB, pa_IN, or_IN)
@@ -929,16 +921,26 @@ function getCommentsOrReplies(comments, onDone) {
                 filter = filter.filter(item => !!item.parentNode.parentNode.querySelector(".ozuftl9m"));
 
                 // avoid collapse / hide toggle
-                // if link is first child, and has siblings, filter it
                 filter = filter.filter(function(item) {
+                    // if nested, keep it (it's not Hide)
+                    if (!!item.closest("ul").parentNode.closest("ul")) {
+                        return true;
+                    }
+
+                    // if link is first child, and has siblings, it's Hide position
                     item = item.parentNode.parentNode;
                     let x = Dom.childIndex(item.parentNode);
                     let skip = x[0] == 0 && x[1] != 1;
 
+                    // this one's different:
+                    // https://www.facebook.com/MarjorieTaylorGreene/posts/2547514125538682
+                    if (!skip) {
+                        skip = x[0] == 2 && x[1] == 3;
+                    }
+
+                    // override?
                     if (skip) {
                         skip = !Dom.hasTextView(item.textContent);
-                    } else {
-                        skip = Dom.hasTextHide(item.textContent);
                     }
 
                     return !skip;
