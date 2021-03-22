@@ -1178,19 +1178,25 @@ function filterOneNew() {
 function setFilterNew2(link) {
     // look for menu items
     let filter = Array.from(document.querySelectorAll(".ama3r5zh[role=\"menu\"],.swg4t2nn[role=\"menu\"]"));
-    filter = filter.filter(item => item.querySelectorAll("[role=\"menuitem\"]").length >= 3);
-
     if (filter.length == 1) {
         const menus = filter[0].querySelectorAll("[role=\"menuitem\"]");
-        const span = menus[2].querySelector("span");
+
+        // click either the last item or third item
+        let i = menus.length - 1;
+        if (i > 2) {
+            i = 2;
+        }
+
+        const span = menus[i].querySelector("span");
         let text = "";
         if (!!span) {
             text = span.textContent;
         }
 
         if (text.trim() != link.textContent.trim()) {
-            menus[2].click();
+            // clicking makes the link go away, so use link before clicking
             const post = link.closest(NEW_ARTICLE);
+            menus[i].click();
             window.setTimeout(() => setFilterNew3(post), 100);
             return;
         }
@@ -1207,7 +1213,12 @@ function setFilterNew2(link) {
 }
 
 function setFilterNew3(post) {
-    if (!post || !!post.querySelector(FILTER_NEW)) {
+    if (!post) {
+        Global.log("Something went wrong. Not waiting.");
+        filterOneNew();
+    }
+
+    if (!!post.querySelector(FILTER_NEW)) {
         filterOneNew();
     } else {
         window.setTimeout(() => setFilterNew3(post), 100);
