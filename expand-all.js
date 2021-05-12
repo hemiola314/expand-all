@@ -461,17 +461,28 @@ class Root {
             let canPost = !!document.querySelector(POST_ACTION);
             let topOnly = !canPost;
             if (topOnly) {
-                if (Dom.filterHidden(document.querySelectorAll("[role=\"grid\"]")).length == 0) {
+                if (Dom.roles("grid") == 0) {
                     // some profile pages have no post ability and no grid
                     // PinkNews has old stye permalink: no post ability; want topmost
-                    topOnly = Dom.filterHidden(document.querySelectorAll("[role=\"contentinfo\"]")).length == 0;
-                } else if (Dom.filterHidden(document.querySelectorAll("[role=\"navigation\"]")).length == 2) {
+                    topOnly = Dom.roles("contentinfo") == 0;
+                } else if (Dom.roles("navigation") == 2) {
                     // if group feed, fall through
                     topOnly = false;
                 }
             } else {
-                // notifications can result in *two* feeds
-                topOnly = Dom.filterHidden(document.querySelectorAll("[role=\"feed\"]")).length > 1;
+                // topOnly; from notifications (private):
+                // https://www.facebook.com/groups/163266214168433/?multi_permalinks=510108426150875
+
+                // !topOnly; pinned post:
+                // https://www.facebook.com/CyprusMail/
+
+                // !topOnly; new activity (private):
+                // https://www.facebook.com/groups/448352062420323
+
+                // !topOnly; no extras:
+                // https://www.facebook.com/ManresaRestaurant/
+
+                topOnly = Dom.roles("feed") == 2 && Dom.roles("grid") == 1 && Dom.roles("contentinfo") == 0;
             }
 
             if (topOnly) {
@@ -627,6 +638,10 @@ class Dom {
         });
 
         return result;
+    }
+
+    static roles(role) {
+        return Dom.filterHidden(document.querySelectorAll("[role=\"" + role + "\"]")).length;
     }
 
     static findFirstVisible(nodes) {
