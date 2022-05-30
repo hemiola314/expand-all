@@ -1196,10 +1196,12 @@ function setFilterNew2(link) {
     if (filter.length == 1) {
         const menus = filter[0].querySelectorAll("[role=\"menuitem\"]");
 
-        // click either the last item or third item
+        // click either the third item (if >3 items), first item (if 2 items), or (default) last item
         let i = menus.length - 1;
         if (i > 2) {
             i = 2;
+        } else if (i == 1) {
+            i = 0;
         }
 
         const span = menus[i].querySelector("span");
