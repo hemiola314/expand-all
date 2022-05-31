@@ -302,7 +302,7 @@ class CfgWindow extends BaseWindow {
             ["In Classic Facebook, click <i>Continue Reading</i> links.", EXPAND_POST],
             ["Expand comments.", EXPAND_COMMENTS],
             ["Expand replies.", EXPAND_REPLIES],
-            ["Don&apos;t force <i>All Comments</i> filter.", EXPAND_FILTER]
+            ["Don&apos;t force <i>All comments</i> filter.", EXPAND_FILTER]
         ];
 
         boxes.forEach(item => {
@@ -758,6 +758,14 @@ class Dom {
 
        return words.some(re => { return s.match(re) != null; });
     }
+
+    static isTextAllComments(s) {
+        const phrases = [
+            "All comments".toLowerCase()
+        ];
+
+        return phrases.indexOf(s.trim().toLowerCase()) >= 0;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1195,13 +1203,18 @@ function setFilterNew2(link) {
     let filter = Array.from(document.querySelectorAll(".ama3r5zh[role=\"menu\"],.swg4t2nn[role=\"menu\"]"));
     if (filter.length == 1) {
         const menus = filter[0].querySelectorAll("[role=\"menuitem\"]");
+        let found = false;
+        for (var i = 0; i < menus.length; i++) {
+            const s = menus[i].querySelector("span");
+            if (s && Dom.isTextAllComments(s.textContent)) {
+                found = true;
+                break;
+            }
+        }
 
-        // click either the third item (if >3 items), first item (if 2 items), or (default) last item
-        let i = menus.length - 1;
-        if (i > 2) {
-            i = 2;
-        } else if (i == 1) {
-            i = 0;
+        if (!found) {
+            Global.log("\u0027" + "All comments" + "\u0027 not found.");
+            i = menus.length - 1;
         }
 
         const span = menus[i].querySelector("span");
