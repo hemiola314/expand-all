@@ -461,7 +461,8 @@ class Root {
             let canPost = !!document.querySelector(POST_ACTION);
             let topOnly = !canPost;
             if (topOnly) {
-                if (Dom.roles("grid") == 0) {
+                // one if 2022 UI in group
+                if (Dom.roles("grid") <= 1) {
                     // some profile pages have no post ability and no grid
                     // PinkNews has old stye permalink: no post ability; want topmost
                     topOnly = Dom.roles("contentinfo") == 0;
