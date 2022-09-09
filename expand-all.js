@@ -1,6 +1,6 @@
 let todo = 6;
 
-const EXPAND_POST = 1;
+const EXPAND_POST = 1; // not used anymore
 const EXPAND_COMMENTS = 2;
 const EXPAND_REPLIES = 4;
 const EXPAND_XLAT = 8; // not used anymore
@@ -8,66 +8,41 @@ const EXPAND_FILTER = 16;
 
 const WAIT_TIME = 100; // in ms
 const MAX_WAIT = 20; // in iterations
-const END_DELAY = 2.5; // in seconds
+const END_DELAY = 3.0; // in seconds
 
-// New
-const POST_ARTICLE = "[class=\"lzcic4wl\"][role=\"article\"]";
-const VIDEO_ARTICLE = "._6x84,[data-pagelet=\"TahoeRightRail\"]";
-// not([role]) avoids full-browser videos
-const FS_ARTICLE = ".o36gj0jk:not([role=\"navigation\"]),[role=\"complementary\"]";
-const NEW_ARTICLE = POST_ARTICLE + "," + FS_ARTICLE + "," + VIDEO_ARTICLE;
+const POST_ARTICLE = "[class=\"icdlwmnq\"][role=\"article\"]";
+const FS_ARTICLE = "[role=\"complementary\"]";
+const ANY_ARTICLE = POST_ARTICLE + "," + FS_ARTICLE;
 
-// New
-// 1: taken from Newspapers.com
-// 2: taken from NAF group
-// 3: ?
-// 4: taken from ManresaRestaurant
-const POST_ACTION = ".sjgh65i0 > div > div > div > div > div > span,.jifvfom9[role=\"button\"],.p24jkzn5,.sjgh65i0 > div > div > div > div > div > a > div";
+const VIDEO_FEED = "#watch_feed";
+const ROLE_MAIN = "[role=\"main\"]";
 
-// Classic and New
-const POST_ROOT = ".userContentWrapper,.uiScrollableAreaContent," + NEW_ARTICLE;
+// 1: https://www.facebook.com/jens.farley
+//    innermost button: "What's on your mind?"
+// 2: https://www.facebook.com/ManresaRestaurant/
+//    first DIV that covers profile pic and "Create post" button
+const POST_ACTION = ".ikduhi8d[role=\"button\"],.ihx95mk1";
 
-// Classic and New
 const RESPONSE_COUNTER = "[aria-label][role=\"article\"]";
 
-const CLASSIC_GET_CONTENT = "._4sxc";
-const CLASSIC_GET_REPLIES = "._4sso";
+const GET_CONTENT = ".i5oewl5a[role=\"button\"]";
+// :not(li) applied programmatically
+const GET_COMMENTS = ".gt60zsk1 " + GET_CONTENT;
 
-const NEW_GET_CONTENT = ".fv0vnmcu > .lrazzd5p";
-const NEW_GET_COMMENTS = ".bkfpd7mw .jklb3kyz .lrazzd5p";
+const FILTER = ".gcj2zyi8 > [role=\"button\"]";
+const FILTER_MENU = "[role=\"menu\"]";
+const FILTER_ITEM = "[role=\"menuitem\"]";
+const FILTER_ITEM_INNER = "span";
 
-// Classic
-// ._3w53 is for when logged in
-// ._6iiv is for theater mode
-// ._7a9a is for when not logged in
-const SHOW_COMMENTS = "[data-ft=\u0027{\"tn\":\"O\"}\u0027]";
-const SINGLE_COMMENT_AREA = "._3w53,._6iiv,._7a9a";
+const CSS_LOGIN_STUFF = "._5hn6,[data-nosnippet]";
 
-// .uiScrollableAreaContent for theater mode
-// .uiStreamStory for playing videos
-const FILTER_ROOT = POST_ROOT + ",.uiScrollableAreaContent,.uiStreamStory";
-const FILTER_DONE = "h6 ~ ul > li";
-const FILTER_ATTR = "data-ordering";
-const FILTER_VALUE = "RANKED_UNFILTERED";
+// 1: https://www.facebook.com/groups/448352062420323/permalink/786843765237816/
+// 2: https://www.facebook.com/MarjorieTaylorGreene/posts/2547514125538682
+const SM_COMMENT = ".jikcssrz :not(span) [role=\"button\"],div[dir=\"auto\"] :not(span)[role=\"button\"]";
+const SEE_MORE_COMMENT = POST_ARTICLE + " " + SM_COMMENT + "," + FS_ARTICLE + " " + SM_COMMENT;
 
-// not([aria-haspopup]) is something on my profile page
-// not(.jifvfom9) is to avoid starting a post
-// not(._4sxc) helps with newspapers.com
-const FILTER_NEW = ".bp9cbjyn > .p8dawk7l[role=\"button\"]:not([aria-label]):not([aria-haspopup]):not(.jifvfom9):not(._4sxc)";
-
-// Classic
-const CSS_LOGIN_STUFF = "._5hn6, ._67m7, .generic_dialog_modal, .rlt63pii";
-
-// Classic
-const BASE_SEE_MORE = ".text_exposed_link .see_more_link_inner";
-const EXPOSE_CONTENT = ".text_exposed_link";
-// avoid Activity Log time stamps
-const CSS_SEE_MORE = ".fss:not(._5shl)";
-
-// New
-// not avoids Edit button
-const SMN = ".lrazzd5p[role=\"button\"]:not(.m5l1wtfr)";
-const SEE_MORE_NEW = POST_ARTICLE + " " + SMN + "," + FS_ARTICLE + " " + SMN + "," + VIDEO_ARTICLE + " " + SMN;
+const SM_BASE = "div.qi72231t.nu7423ey.n3hqoq4p.r86q59rh.b3qcqh3k.fq87ekyn.bdao358l.fsf7x5fv.rse6dlih.s5oniofx.m8h3af8h.l7ghb35v.kjdc1dyq.kmwttqpk.srn514ro.oxkhqvkx.rl78xhln.nch0832m.cr00lzj9.rn8ck1ys.s3jn8y49.icdlwmnq.cxfqmxzd.pbevjfx6.innypi6y";
+const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE;
 
 const _NONE = "no-value";
 const _COMMENTS = "-comments";
@@ -299,7 +274,6 @@ class CfgWindow extends BaseWindow {
         node.style.fontWeight = "bold";
 
         const boxes = [
-            ["In Classic Facebook, click <i>Continue Reading</i> links.", EXPAND_POST],
             ["Expand comments.", EXPAND_COMMENTS],
             ["Expand replies.", EXPAND_REPLIES],
             ["Don&apos;t force <i>All comments</i> filter.", EXPAND_FILTER]
@@ -358,11 +332,10 @@ class CfgWindow extends BaseWindow {
 
     init(div) {
         let boxes = div.querySelectorAll("input");
-        if (boxes.length === 4) {
-            boxes[0].checked = (todo & EXPAND_POST) != 0;
-            boxes[1].checked = (todo & EXPAND_COMMENTS) != 0;
-            boxes[2].checked = (todo & EXPAND_REPLIES) != 0;
-            boxes[3].checked = (todo & EXPAND_FILTER) != 0;
+        if (boxes.length === 3) {
+            boxes[0].checked = (todo & EXPAND_COMMENTS) != 0;
+            boxes[1].checked = (todo & EXPAND_REPLIES) != 0;
+            boxes[2].checked = (todo & EXPAND_FILTER) != 0;
         }
     }
 
@@ -421,10 +394,10 @@ class LogWindow extends BaseWindow {
         }
 
         if (this.phantoms > 0) {
-            this.log(this.phantoms + " phantom(s)");
+//          this.log(this.phantoms + " phantom(s)");
         }
 
-        this.log("Responses = " + Global.root.queryAll(RESPONSE_COUNTER).length);
+        this.log("Responses showing = " + Global.root.queryAll(RESPONSE_COUNTER).length);
     }
 }
 
@@ -453,69 +426,43 @@ class Root {
     }
 
     determine() {
+        if (Dom.filterHidden(document.querySelectorAll(VIDEO_FEED)).length === 1) {
+            Global.log("Video feed; please drill down to one video (click the time stamp).");
+            return false;
+        }
+
         const EXPANDING = "Expanding: ";
 
-        // complicated New case
-        const div = Dom.findFirstVisible(document.querySelectorAll(POST_ARTICLE));
-        if (!!div) {
-            let canPost = !!document.querySelector(POST_ACTION);
+        const divv = Dom.findFirstVisible(document.querySelectorAll(POST_ARTICLE));
+        if (!!divv) {
+            let canPost = !!document.querySelector(POST_ACTION);;
             let topOnly = !canPost;
+
             if (topOnly) {
-                // one if 2022 UI in group
-                if (Dom.roles("grid") <= 1) {
-                    // some profile pages have no post ability and no grid
-                    // PinkNews has old stye permalink: no post ability; want topmost
-                    topOnly = Dom.roles("contentinfo") == 0;
-                } else if (Dom.roles("navigation") == 2) {
-                    // if group feed, fall through
-                    topOnly = false;
-                }
+                // PinkNews has no post ability; want topmost
+                topOnly = Dom.roles("contentinfo") == 0;
             } else {
-                // topOnly; from notifications (private):
                 // https://www.facebook.com/groups/163266214168433/?multi_permalinks=510108426150875
-
-                // !topOnly; pinned post:
-                // https://www.facebook.com/CyprusMail/
-
-                // !topOnly; new activity (private):
-                // https://www.facebook.com/groups/448352062420323
-
-                // !topOnly; no extras:
-                // https://www.facebook.com/ManresaRestaurant/
-
+                // https://www.facebook.com/CyprusMail/ (pinned post)
                 topOnly = Dom.roles("feed") == 2 && Dom.roles("grid") == 1 && Dom.roles("contentinfo") == 0;
             }
 
             if (topOnly) {
                 Global.log(EXPANDING + "Topmost post");
-                this.rootNode = div.parentNode;
+                this.rootNode = divv.parentNode;
                 this.usingBody = false;
             }
         }
 
         if (!this.usingBody) {
-            return;
+            return true;
         }
 
         const USE_PARENT = true;
 
         let check = [];
-
-        // Classic
-        check.push([".uiStreamStory", "Video comments on right", !USE_PARENT]);
-        check.push(["div.rhcScroller .uiScrollableAreaContent", "Theater mode", USE_PARENT]);
-        check.push([".uiLayer:not(.hidden_elem)", "Overlaid post", !USE_PARENT]);
-        check.push([".permalinkPost", "Permalinked post", !USE_PARENT]);
-        check.push(["#contentArea", "Classic feed", !USE_PARENT]);
-
-        // New
-        check.push(["[data-pagelet=\"TahoeRightRail\"]", "Full-browser video", USE_PARENT]);
         check.push([FS_ARTICLE, "Full-browser", USE_PARENT]);
-
-        // Classic and New
-        // order matters; e.g., Classic NAF
-        check.push(["[role=\"main\"]", "Main content area", !USE_PARENT]);
-        check.push(["[role=\"feed\"]", "Feed", !USE_PARENT]);
+        check.push([ROLE_MAIN, "Main content area", !USE_PARENT]);
 
         check.find(item => {
             const divs = Dom.filterHidden(document.querySelectorAll(item[0]));
@@ -539,6 +486,8 @@ class Root {
                 return true;
             }
         });
+
+        return true;
     }
 
     getRoot() {
@@ -555,53 +504,8 @@ class Root {
         return result;
     }
 
-    static isClassicVideo() {
-        const result = !!document.querySelector(".uiStreamStory");
-        return result;
-    }
-
-    static prepIfClassicVideo(onDone) {
-        let wait = 0;
-        if (Root.isClassicVideo()) {
-            const links = document.querySelectorAll(SHOW_COMMENTS);
-            if (links.length > 0) {
-                Global.log("Making sure video comments are showing");
-                links[links.length - 1].click();
-                wait = 100;
-            }
-        }
-
-        if (onDone) {
-            window.setTimeout(onDone, wait);
-        }
-    }
-
-    isFullBrowserNew() {
-        let result = !!Global.root.query(FS_ARTICLE);
-        return result;
-    }
-
-    isNewVideoKind() {
-        let result = !!Global.root.query(VIDEO_ARTICLE);
-        return result;
-    }
-
-    isSearchResults() {
-        // Classic, New
-        let result = !!Global.root.query("#pagelet_group_search,.p8dawk7l[role=\"presentation\"]");
-        return result;
-    }
-
     countPosts() {
-        if (Root.isClassicVideo()) {
-            return 1;
-        }
-
-        let filter = Array.from(Global.root.queryAll(POST_ROOT));
-
-        // Classic
-        // https://www.facebook.com/jens.farley/posts/1493248944020884:6
-        filter = filter.filter(item => !item.querySelector(POST_ROOT));
+        let filter = Array.from(Global.root.queryAll(ANY_ARTICLE));
         return filter.length;
     }
 }
@@ -632,11 +536,13 @@ class Dom {
 
     static filterHidden(nodes) {
         let result = [];
-        nodes.forEach(item => {
-            if (!Dom.isHidden(item)) {
-                result.push(item);
-            }
-        });
+        if (nodes) {
+            nodes.forEach(item => {
+                if (!Dom.isHidden(item)) {
+                    result.push(item);
+                }
+            });
+        }
 
         return result;
     }
@@ -646,6 +552,10 @@ class Dom {
     }
 
     static findFirstVisible(nodes) {
+        if (!nodes) {
+            return null;
+        }
+
         let filtered = Dom.filterHidden(nodes);
         return filtered.length >= 1 ? filtered[0] : null;
     }
@@ -663,6 +573,10 @@ class Dom {
 
             if (Dom.isHidden(node)) {
                 s += " hidden";
+            }
+
+            if (node.role) {
+                s += " role=\"" + node.role + "\"";
             }
 
             Global.log(s);
@@ -725,41 +639,6 @@ class Dom {
         return words.some(re => { return s.match(re) != null; });
     }
 
-    static hasTextShare(s) {
-        const words = [
-            /%20Share$/,   // English (en_US, en_GB, pa_IN, or_IN)
-            /%20Shares$/,  // English (en_US, en_GB, pa_IN)
-            /%20次分享$/,  // Chinese (zh_TW, zh_CN, zh_HK)
-            /次分享$/,   // Chinese (zh_TW, zh_CN, zh_HK)
-            /%20सामायिकीकरण$/,  // Marathi (mr_IN)
-            /%20शेअर$/,        // Marathi (mr_IN)
-            /%20शेयर$/,     // Hindi (hi_IN)
-            /%20সহভাগ$/,    // Assamese (as_IN)
-            /%20ভাগ-বতৰা$/, // Assamese (as_IN)
-            /%20শেয়ার$/,    // Bengali (bn_IN)
-            /%20શેર$/,      // Gujarati (gu_IN)
-            /%20ସେୟାର୍$/,   // Oriya (or_IN)
-            /%20ସେୟାର$/,   // Oriya (or_IN)
-            /%20பகிர்வு$/,    // Tamil (ta_IN)
-            /%20பகிர்வுகள்$/, // Tamil (ta_IN)
-            /%20భాగస్వామ్యం$/, // Telugu (te_IN)
-            /%20భాగస్వామ్యాలు$/, // Telugu (te_IN)
-            /%20ಹಂಚಿಕೆ$/,      // Kannada (ka_IN)
-            /%20ಹಂಚಿಕೆಗಳು$/,   // Kannada (ka_IN)
-            /%20പങ്കിടൽ$/,     // Malayalam (ml_IN)
-            /%20പങ്കിടലുകൾ$/, // Malayalam (ml_IN)
-            /%20compartido$/,  // Spanish (es_LA, es_ES)
-            /%20compartida$/,  // Spanish (es_ES)
-            /%20partage$/,    // French (fr_CA, fr_FR)
-            /%20partages$/,   // French (fr_CA, fr_FR)
-            /^مشاركة/,         // Arabic (ar_AR)
-            /^مشاركات%20/      // Arabic (ar_AR)
-            // lost steam, as I do not think this matters
-       ];
-
-       return words.some(re => { return s.match(re) != null; });
-    }
-
     static isTextAllComments(s) {
         const phrases = [
             "All comments".toLowerCase()
@@ -777,79 +656,30 @@ function getResponseCount(item) {
 }
 
 function ensureCommentsShowing(onDone) {
-    if (Global.root.isSearchResults()) {
-        Global.log("You must manually drill down into a search result.");
-
-        if (onDone) onDone();
-        return;
-    }
-
-    let filter = [];
-    const n = Global.root.countPosts();
+    let n = Global.root.countPosts();
     if (n > 1) {
-        Global.log("Examining " + n + " posts");
+        Global.log("Found " + n + " posts");
     }
 
-    Global.root.queryAll(POST_ROOT).forEach(item => {
-        // see countPosts for similar nesting check
-        if (!item.querySelector(POST_ROOT)) {
-            const link = item.querySelector(SHOW_COMMENTS);
-            if (link && !item.querySelector(SINGLE_COMMENT_AREA)) {
-                filter.push(link);
-            }
-        }
-    });
-
-    if (filter.length > 0) {
-        Global.log("Showing comment area for " + filter.length + " post(s)");
-        clickAndWait(_NONE, onDone, filter, 0);
-    } else {
-        if (onDone) onDone();
-    }
-}
-
-function ensureCommentsShowingNew(onDone) {
-    let filter = [];
-
-    let selector = ".cwj9ozl2.tvmbv18p";
-
+    // @todo
     // https://www.facebook.com/photo?fbid=1124898877855180
-    if (Global.root.isFullBrowserNew()) {
-        selector = "[class=\"cwj9ozl2\"]";
-    }
-
     // https://www.facebook.com/125982670754724/videos/372875816621699/
-    if (Global.root.isNewVideoKind()) {
-        selector = ".l9j0dhe7.tkr6xdv7.buofh1pr.eg9m0zos";
-    }
-
-    Global.root.queryAll(POST_ROOT).forEach(item => {
-        if (!item.querySelector(selector)) {
-            const link = item.querySelector(".gtad4xkn:first-child .auili1gw[role=\"button\"]");
-
-            if (link && !Dom.hasTextShare(link.textContent)) {
+    let filter = [];
+/*
+    Global.root.queryAll(ANY_ARTICLE).forEach(item => {
+        if (item has hidden comments) {
+            const link = link to show comments;
+            if (link) {
                 filter.push(link);
             }
         }
     });
-
+*/
     if (filter.length > 0) {
         Global.log("Showing comment area for " + filter.length + " post(s)");
         clickAndWait(_NONE, onDone, filter, 0);
     } else {
         if (onDone) onDone();
-    }
-}
-
-function isNewWindow(link) {
-    return !!link.querySelector("a[target][href]");
-}
-
-function newWindowNow(link) {
-    const anchor = link.querySelector("a[target][href]");
-    Global.log("New window: " + anchor.textContent);
-    if (!window.open(anchor.getAttribute("href"), anchor.getAttribute("target"))) {
-        Global.log("New window was blocked!");
     }
 }
 
@@ -860,45 +690,31 @@ function clickClass(value, onDone) {
     }
 
     let filter = Array.from(Global.root.queryAll(value)).filter(item => {
-        if (value === BASE_SEE_MORE) {
-            // avoid See More in group right
-            if (item.parentNode.closest(".groupsSideMargin")) {
+        if (value === SEE_MORE_BASE) {
+            if (item.closest(RESPONSE_COUNTER)) {
                 return false;
             }
-
-            // a clicked-on See More becomes hidden
-            if (Dom.isHidden(item)) {
-                return false;
-            }
-
-            return true;
         }
 
-        if (value === SEE_MORE_NEW) {
+        if (value === SEE_MORE_COMMENT) {
+            if (!item.closest(RESPONSE_COUNTER)) {
+                return false;
+            }
+        }
+
+        if (value === SEE_MORE_COMMENT || value === SEE_MORE_BASE) {
             // must have no child nodes
             if (!!item.childElementCount) {
                 return false;
             }
+        }
 
-            // issues only if link parent is not SPAN
-            if (item.parentNode.nodeName != "SPAN") {
-                return true;
-            }
-
-            // absence of ellipsis means See Less
+        if (value === SEE_MORE_BASE) {
+            // must be preceded by ellipsis; otherwise See Less, See original, etc.
             if (item.parentNode.parentNode.previousSibling) {
                 let full = item.parentNode.parentNode.previousSibling.textContent;
                 return full.charCodeAt(full.length - 1) == 8230;
             }
-        }
-
-        if (value === EXPOSE_CONTENT) {
-            // Continue Reading?
-            if (isNewWindow(item)) {
-                newWindowNow(item);
-            }
-
-            return false;
         }
 
         return true;
@@ -914,10 +730,9 @@ function clickClass(value, onDone) {
 }
 
 function doNotWait(value) {
-    return [ CSS_SEE_MORE,
-             SEE_MORE_NEW,
-             BASE_SEE_MORE,
-             EXPOSE_CONTENT ].indexOf(value) >= 0;
+    return [ SEE_MORE_COMMENT,
+             SEE_MORE_BASE
+           ].indexOf(value) >= 0;
 }
 
 function getCommentsOrReplies(comments, onDone) {
@@ -926,55 +741,40 @@ function getCommentsOrReplies(comments, onDone) {
         return;
     }
 
-    let filter = Array.from(Global.root.queryAll(CLASSIC_GET_CONTENT));
+    let filter = Array.from(Global.root.queryAll(GET_CONTENT));
     if (filter.length > 0) {
         if (comments) {
-            filter = filter.filter(item => !item.querySelector(CLASSIC_GET_REPLIES));
-        } else {
-            filter = Array.from(Global.root.queryAll(CLASSIC_GET_REPLIES));
+            filter = Array.from(Global.root.queryAll(GET_COMMENTS));
+            // https://www.facebook.com/groups/AnalfabetiDellaBirra/permalink/2080384488695788/
+            filter = filter.filter(item => !item.parentNode.closest("li"));
+       } else {
+            // avoid collapse / hide toggle
+            filter = filter.filter(function(item) {
+                // if nested, keep it (it's not Hide)
+                if (!!item.closest("ul") && !!item.closest("ul").parentNode.closest("ul")) {
+                    // https://www.facebook.com/groups/297274457043228/posts/2696675147103135/
+                    return true;
+                }
+
+                // if link is first child, and has siblings, it's Hide position
+                let x = Dom.childIndex(item.parentNode);
+                let skip = x[0] == 0 && x[1] != 1;
+
+                // this one's different:
+                // https://www.facebook.com/MarjorieTaylorGreene/posts/2547514125538682
+                if (!skip) {
+                    skip = x[0] == 2 && x[1] == 3;
+                }
+
+                // override?
+                if (skip) {
+                    skip = !Dom.hasTextView(item.textContent);
+                }
+
+                return !skip;
+            });
         }
-    }
-
-    if (filter.length == 0) {
-        filter = Array.from(Global.root.queryAll(NEW_GET_CONTENT));
-        if (filter.length > 0) {
-            if (comments) {
-                filter = Array.from(Global.root.queryAll(NEW_GET_COMMENTS));
-            } else {
-                // for replies-only, remove 'View more comments'
-                filter = filter.filter(item => !!item.parentNode.parentNode.querySelector(".ozuftl9m"));
-
-                // avoid collapse / hide toggle
-                filter = filter.filter(function(item) {
-                    // if nested, keep it (it's not Hide)
-                    if (!!item.closest("ul").parentNode.closest("ul")) {
-                        return true;
-                    }
-
-                    // if link is first child, and has siblings, it's Hide position
-                    item = item.parentNode.parentNode;
-                    let x = Dom.childIndex(item.parentNode);
-                    let skip = x[0] == 0 && x[1] != 1;
-
-                    // this one's different:
-                    // https://www.facebook.com/MarjorieTaylorGreene/posts/2547514125538682
-                    if (!skip) {
-                        skip = x[0] == 2 && x[1] == 3;
-                    }
-
-                    // override?
-                    if (skip) {
-                        skip = !Dom.hasTextView(item.textContent);
-                    }
-
-                    return !skip;
-                });
-
-                // sometimes there's an image before the reply getter (New)
-                filter = filter.filter(item => !item.querySelector("[role=\"img\"]"));
-            }
-        }
-    }
+  }
 
     if (filter.length > 0) {
         clickAndWait(comments ? _COMMENTS : _REPLIES, onDone, filter, 0);
@@ -986,10 +786,6 @@ function getCommentsOrReplies(comments, onDone) {
 function getBestLabel(link) {
     let label = link.getAttribute("aria-label");
 
-    if (!label && link.querySelector("._3eol")) {
-        label = link.querySelector("._3eol").textContent;
-    }
-
     if (!label) {
         label = link.textContent;
     }
@@ -997,12 +793,6 @@ function getBestLabel(link) {
     // chop off some extra stuff if present
     label = label.split("\u00a0\u0020\u00b7")[0];
     label = label.split("\u0020\u00b7")[0];
-
-    // chop off time of reply, if present
-    const time = link.querySelector("._3eom");
-    if (time && label.endsWith(time.textContent)) {
-        label = label.substring(0, label.length - time.textContent.length);
-    }
 
     return label;
 }
@@ -1019,7 +809,6 @@ function clickAndWait(value, onDone, links, i) {
     Global.log("click (" + (links.length - i - 1) + " left): " + getBestLabel(links[i]));
     links[i].click();
 
-    // Classic: showing hidden comment area, not logged in, has filter
     if (value == _NONE) {
         n = Global.root.getContentSize();
     }
@@ -1113,15 +902,21 @@ function pumpOnce3(onDone) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Comment filters - Classic
+// Comment filters
 
 function setFilter(onDone) {
-    window.filters = Array.from(Global.root.queryAll("[" + FILTER_ATTR + "]")).filter(item =>
-        item.getAttribute(FILTER_ATTR) != FILTER_VALUE);
+    window.filters = Array.from(Global.root.queryAll(FILTER));
+    if (window.filters > Global.root.countPosts()) {
+        Global.log("Something went wrong");
+        Global.log("Not checking " + window.filters.length + " filter(s)");
+        if (onDone) onDone;
+        return;
+    }
+
     window.filters_i = 0;
     window.filters_onDone = onDone;
     if (window.filters.length > 0) {
-        Global.log("Changing " + window.filters.length + " Classic filter(s)");
+        Global.log("Checking " + window.filters.length + " filter(s)");
     }
 
     filterOne();
@@ -1138,75 +933,13 @@ function filterOne() {
 }
 
 function setFilter2(link) {
-    const menu = document.querySelector("[data-ownerid=\"" + link.id + "\"]");
-    if (menu) {
-        const item = menu.querySelector("[" + FILTER_ATTR + "=\"" + FILTER_VALUE + "\"]");
-        if (item) {
-            const post = link.closest(FILTER_ROOT);
-            window.setTimeout(() => setFilter3(post, 50));
-            item.closest("a").click();
-            return;
-        }
-    }
-
-    link.click();
-    filterOne();
-}
-
-function setFilter3(post) {
-    if (!post.querySelector(FILTER_DONE)) {
-        window.setTimeout(() => setFilter3(post), 200);
-    } else {
-        filterOne();
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Comment filters - New
-
-function setFilterNew(onDone) {
-    window.filters = Array.from(Global.root.queryAll(FILTER_NEW));
-
-    // kick out translation-related stuff
-    window.filters = window.filters.filter(item => !item.closest(".sq6gx45u"));
-
-    // kick out post type selector and profile photo update
-    window.filters = window.filters.filter(item => !item.querySelector("h1,svg"));
-
-    if (window.filters > Global.root.countPosts()) {
-        Global.log("Something went wrong");
-        Global.log("Not checking " + window.filters.length + " New filter(s)");
-        if (onDone) onDone;
-        return;
-    }
-
-    window.filters_i = 0;
-    window.filters_onDone = onDone;
-    if (window.filters.length > 0) {
-        Global.log("Checking " + window.filters.length + " New filter(s)");
-    }
-
-    filterOneNew();
-}
-
-function filterOneNew() {
-    if (window.filters_i < window.filters.length) {
-        const link = window.filters[window.filters_i++];
-        link.click();
-        window.setTimeout(() => setFilterNew2(link), 100);
-    } else {
-        if (window.filters_onDone) window.filters_onDone();
-    }
-}
-
-function setFilterNew2(link) {
     // look for menu items
-    let filter = Array.from(document.querySelectorAll(".ama3r5zh[role=\"menu\"],.swg4t2nn[role=\"menu\"]"));
+    let filter = Array.from(document.querySelectorAll(FILTER_MENU));
     if (filter.length == 1) {
-        const menus = filter[0].querySelectorAll("[role=\"menuitem\"]");
+        const menus = filter[0].querySelectorAll(FILTER_ITEM);
         let found = false;
         for (var i = 0; i < menus.length; i++) {
-            const s = menus[i].querySelector("span");
+            const s = menus[i].querySelector(FILTER_ITEM_INNER);
             if (s && Dom.isTextAllComments(s.textContent)) {
                 found = true;
                 break;
@@ -1218,40 +951,43 @@ function setFilterNew2(link) {
             i = menus.length - 1;
         }
 
-        const span = menus[i].querySelector("span");
+        const span = menus[i].querySelector(FILTER_ITEM_INNER);
         let text = "";
         if (!!span) {
             text = span.textContent;
         }
 
         if (text.trim() != link.textContent.trim()) {
+            Global.log(window.filters_i + ": changing \"" + link.textContent.trim() + "\"");
             // clicking makes the link go away, so use link before clicking
-            const post = link.closest(NEW_ARTICLE);
+            const post = link.closest(ANY_ARTICLE);
             menus[i].click();
-            window.setTimeout(() => setFilterNew3(post), 100);
+            window.setTimeout(() => setFilter3(post), 100);
             return;
         }
 
         // the menu cannot be closed using the DOM (click, focus),
         // so we just blank it out
-        menus[0].closest("[role=\"menu\"]").outerHTML = "";
+        menus[0].closest(FILTER_MENU).outerHTML = "";
+    } else if (filter.length > 1) {
+        Global.log("Comment filter failure!");
     }
 
     // this could mean we blanked the menu last time (see above)
     // or it could mean menu has not been generated in time.
     // could retry instead, with timeouts
-    filterOneNew();
+    filterOne();
 }
 
-function setFilterNew3(post) {
+function setFilter3(post) {
     if (!post) {
         Global.log("Something went wrong. Not waiting.");
     }
 
-    if (!post || !!post.querySelector(FILTER_NEW)) {
-        filterOneNew();
+    if (!post || !!post.querySelector(FILTER)) {
+        filterOne();
     } else {
-        window.setTimeout(() => setFilterNew3(post), 100);
+        window.setTimeout(() => setFilter3(post), 100);
     }
 }
 
@@ -1267,31 +1003,20 @@ class Actions {
     setUpActions() {
         this.actions = [];
 
-        this.actions.push(onDone => Root.prepIfClassicVideo(onDone));
         this.actions.push(onDone => ensureCommentsShowing(onDone));
-        this.actions.push(onDone => ensureCommentsShowingNew(onDone));
 
         if ((todo & EXPAND_FILTER) == 0) {
             this.actions.push(onDone => setFilter(onDone));
-            this.actions.push(onDone => setFilterNew(onDone));
         }
-
-        // check for See More in base post
-        this.actions.push(onDone => clickClass(BASE_SEE_MORE, onDone));
 
         function seeMore(o) {
-            // See More links on comments and replies
-            // See special case(s) in clickClass()
-            o.actions.push(onDone => clickClass(CSS_SEE_MORE, onDone));
-            o.actions.push(onDone => clickClass(SEE_MORE_NEW, onDone));
+            // see special case(s) in clickClass()
+            o.actions.push(onDone => clickClass(SEE_MORE_COMMENT, onDone));
         }
 
+        // see special case(s) in clickClass()
+        this.actions.push(onDone => clickClass(SEE_MORE_BASE, onDone));
         seeMore(this);
-
-        // check Continue Reading links in base post
-        if ((todo & EXPAND_POST) != 0) {
-            this.actions.push(onDone => clickClass(EXPOSE_CONTENT, onDone));
-        }
 
         this.actions.push(onDone => pumpOnce(onDone));
 
@@ -1350,10 +1075,12 @@ class Session {
         Global.escHandler.on();
         Global.cfgHandler.on();
         Root.removeOverlay();
-        Global.root.determine();
-
-        Global.actions = new Actions();
-        Global.actions.kickOff();
+        if (Global.root.determine()) {
+            Global.actions = new Actions();
+            Global.actions.kickOff();
+        } else {
+            Session.endSession();
+        }
     }
 
     static endSession() {
