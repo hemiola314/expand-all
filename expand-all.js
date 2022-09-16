@@ -711,10 +711,25 @@ function clickClass(value, onDone) {
 
         if (value === SEE_MORE_BASE) {
             // must be preceded by ellipsis; otherwise See Less, See original, etc.
+
+            // the old way of doing things
+            // https://www.facebook.com/sbsnews/videos/372875816621699/
             if (item.parentNode.parentNode.previousSibling) {
                 let full = item.parentNode.parentNode.previousSibling.textContent;
-                return full.charCodeAt(full.length - 1) == 8230;
+                if (full.charCodeAt(full.length - 1) === 8230) {
+                    return true;
+                }
             }
+
+            // the new way of doing things
+            if (item.previousSibling && item.previousSibling.previousSibling) {
+                let full = item.previousSibling.previousSibling.textContent;
+                if (full.charCodeAt(full.length - 1) === 8230) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         return true;
@@ -925,11 +940,17 @@ function setFilter(onDone) {
 function filterOne() {
     if (window.filters_i < window.filters.length) {
         const link = window.filters[window.filters_i++];
-        link.click();
-        window.setTimeout(() => setFilter2(link), 100);
-    } else {
-        if (window.filters_onDone) window.filters_onDone();
+        if (Dom.isTextAllComments(link.textContent)) {
+            filterOne();
+        } else {
+            link.click();
+            window.setTimeout(() => setFilter2(link), 100);
+        }
+
+        return;
     }
+
+    if (window.filters_onDone) window.filters_onDone();
 }
 
 function setFilter2(link) {
@@ -947,30 +968,30 @@ function setFilter2(link) {
         }
 
         if (!found) {
-            Global.log("\u0027" + "All comments" + "\u0027 not found.");
-            i = menus.length - 1;
-        }
+            Global.log(window.filters_i + ": \u0027" + "All comments" + "\u0027 not found.");
+            // the menu cannot be closed using the DOM (click, focus),
+            // so we just blank it out
+            menus[0].closest(FILTER_MENU).outerHTML = "";
+        } else {
+            const span = menus[i].querySelector(FILTER_ITEM_INNER);
+            let text = "";
+            if (!!span) {
+                text = span.textContent;
+            }
 
-        const span = menus[i].querySelector(FILTER_ITEM_INNER);
-        let text = "";
-        if (!!span) {
-            text = span.textContent;
+            if (text.trim() != link.textContent.trim()) {
+                Global.log(window.filters_i + ": changing \u0027" + link.textContent.trim() + "\u0027 to \u0027" + text.trim() + "\u0027");
+                // clicking makes the link go away, so use link before clicking
+                const post = link.closest(ANY_ARTICLE);
+                menus[i].click();
+                window.setTimeout(() => setFilter3(post), 100);
+                return;
+            }
         }
-
-        if (text.trim() != link.textContent.trim()) {
-            Global.log(window.filters_i + ": changing \"" + link.textContent.trim() + "\"");
-            // clicking makes the link go away, so use link before clicking
-            const post = link.closest(ANY_ARTICLE);
-            menus[i].click();
-            window.setTimeout(() => setFilter3(post), 100);
-            return;
-        }
-
-        // the menu cannot be closed using the DOM (click, focus),
-        // so we just blank it out
-        menus[0].closest(FILTER_MENU).outerHTML = "";
     } else if (filter.length > 1) {
-        Global.log("Comment filter failure!");
+        Global.log("Comment filter failure! (" + filter.length + ")");
+    } else if (filter.length === 0) {
+        Global.log(window.filters_i + ": \u0027" + "All comments" + "\u0027 not found. (b)");
     }
 
     // this could mean we blanked the menu last time (see above)
