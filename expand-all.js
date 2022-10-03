@@ -618,8 +618,8 @@ class Dom {
             /^Afficher%20/, // French (fr_CA, fr_FR)
             /^عرض%20/,     // Arabic (ar_AR)
             /^Показать%20/, // Russian (ru_RU)
-            /^Lihat%20/,      // Indonesian (id_ID)
-            /^Tampilkan%20/,  // Indonesian (id_ID)
+            /^Lihat%20/,      // Indonesian (in_ID)
+            /^Tampilkan%20/,  // Indonesian (in_ID)
             /件を表示$/,        // Japanese (ja_JA, ja_KS)
             /^Преглед%20/,     // Bulgarian (bg_BG)
             /%20보기$/,         // Korean (ko_KR)
@@ -641,7 +641,8 @@ class Dom {
 
     static isTextAllComments(s) {
         const phrases = [
-            "All comments".toLowerCase()
+            "All comments".toLowerCase(), // English (en_US and en_GB)
+            "Semua komentar".toLowerCase() // Indonesian (in_ID)
         ];
 
         return phrases.indexOf(s.trim().toLowerCase()) >= 0;
