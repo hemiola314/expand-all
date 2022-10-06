@@ -10,7 +10,7 @@ const WAIT_TIME = 100; // in ms
 const MAX_WAIT = 20; // in iterations
 const END_DELAY = 3.0; // in seconds
 
-const POST_ARTICLE = "[class=\"icdlwmnq\"][role=\"article\"]";
+const POST_ARTICLE = "[class=\"x1a2a7pz\"][role=\"article\"]";
 const FS_ARTICLE = "[role=\"complementary\"]";
 const ANY_ARTICLE = POST_ARTICLE + "," + FS_ARTICLE;
 
@@ -19,29 +19,27 @@ const ROLE_MAIN = "[role=\"main\"]";
 
 // 1: https://www.facebook.com/jens.farley
 //    innermost button: "What's on your mind?"
-// 2: https://www.facebook.com/ManresaRestaurant/
+// 2: https://www.facebook.com/MandarinCompanion/
 //    first DIV that covers profile pic and "Create post" button
-const POST_ACTION = ".ikduhi8d[role=\"button\"],.ihx95mk1";
+const POST_ACTION = ".xt7dq6l[role=\"button\"],.xu9j1y6";
 
 const RESPONSE_COUNTER = "[aria-label][role=\"article\"]";
 
-const GET_CONTENT = ".i5oewl5a[role=\"button\"]";
+const GET_CONTENT = ".xsyo7zv[role=\"button\"]";
 // :not(li) applied programmatically
-const GET_COMMENTS = ".gt60zsk1 " + GET_CONTENT;
+const GET_COMMENTS = ".x13a6bvl " + GET_CONTENT;
 
-const FILTER = ".gcj2zyi8 > [role=\"button\"]";
+const FILTER = ".xe0p6wg > [role=\"button\"]";
 const FILTER_MENU = "[role=\"menu\"]";
 const FILTER_ITEM = "[role=\"menuitem\"]";
 const FILTER_ITEM_INNER = "span";
 
 const CSS_LOGIN_STUFF = "._5hn6,[data-nosnippet]";
 
-// 1: https://www.facebook.com/groups/448352062420323/permalink/786843765237816/
-// 2: https://www.facebook.com/MarjorieTaylorGreene/posts/2547514125538682
-const SM_COMMENT = ".jikcssrz :not(span) [role=\"button\"],div[dir=\"auto\"] :not(span)[role=\"button\"]";
+const SM_COMMENT = "[dir=\"auto\"] [role=\"button\"]";
 const SEE_MORE_COMMENT = POST_ARTICLE + " " + SM_COMMENT + "," + FS_ARTICLE + " " + SM_COMMENT;
 
-const SM_BASE = "div.qi72231t.nu7423ey.n3hqoq4p.r86q59rh.b3qcqh3k.fq87ekyn.bdao358l.fsf7x5fv.rse6dlih.s5oniofx.m8h3af8h.l7ghb35v.kjdc1dyq.kmwttqpk.srn514ro.oxkhqvkx.rl78xhln.nch0832m.cr00lzj9.rn8ck1ys.s3jn8y49.icdlwmnq.cxfqmxzd.pbevjfx6.innypi6y";
+const SM_BASE = "div.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f";
 const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE;
 
 const _NONE = "no-value";
@@ -641,8 +639,13 @@ class Dom {
 
     static isTextAllComments(s) {
         const phrases = [
-            "All comments".toLowerCase(), // English (en_US and en_GB)
-            "Semua komentar".toLowerCase() // Indonesian (in_ID)
+            "All comments".toLowerCase(), // English
+            "Semua komentar".toLowerCase(), // Indonesian
+            "Todos os comentários".toLowerCase(), // Portuguese
+            "Všechny komentáře".toLowerCase(), // Czech
+            "Все комментарии".toLowerCase(), // Russian
+            "Όλα τα σχόλια".toLowerCase(), // Greek
+            "すべてのコメント" // Japanese
         ];
 
         return phrases.indexOf(s.trim().toLowerCase()) >= 0;
