@@ -503,7 +503,7 @@ class Root {
     }
 
     countPosts() {
-        let filter = Array.from(Global.root.queryAll(ANY_ARTICLE));
+        let filter = Global.root.queryAll(ANY_ARTICLE);
         return filter.length;
     }
 }
@@ -612,13 +612,14 @@ class Dom {
             /%20వీక్షించండి$/, // Telugu (te_IN)
             /%20ವೀಕ್ಷಿಸಿ$/,    // Kannada (ka_IN)
             /%20കാണുക$/, // Malayalam (ml_IN)
-            /^Ver%20/,     // Spanish and Portugese (es_LA, es_ES, pt_BR, pt_PT)
+            /^Ver%20/,     // Spanish and Portuguese (es_LA, es_ES, pt_BR, pt_PT)
             /^Afficher%20/, // French (fr_CA, fr_FR)
             /^عرض%20/,     // Arabic (ar_AR)
             /^Показать%20/, // Russian (ru_RU)
             /^Lihat%20/,      // Indonesian (in_ID)
             /^Tampilkan%20/,  // Indonesian (in_ID)
             /件を表示$/,        // Japanese (ja_JA, ja_KS)
+            /件を見る$/,        // Japanese
             /^Преглед%20/,     // Bulgarian (bg_BG)
             /%20보기$/,         // Korean (ko_KR)
             /^Visualizza%20/,  // Italian (it_IT)
@@ -631,7 +632,8 @@ class Dom {
             /^Skoða%20/,      // Icelandic (is_IS)
             /%20weergeven$/,  // Dutch (nl_NL)
             /%20bekijken$/,   // Dutch (nl_BE)
-            /^Bekijk%20/      // Dutch (nl_BE)
+            /^Bekijk%20/,     // Dutch (nl_BE)
+            /^Δείτε%20/       // Greek
         ];
 
         return words.some(re => { return s.match(re) != null; });
@@ -645,7 +647,8 @@ class Dom {
             "Všechny komentáře".toLowerCase(), // Czech
             "Все комментарии".toLowerCase(), // Russian
             "Όλα τα σχόλια".toLowerCase(), // Greek
-            "すべてのコメント" // Japanese
+            "すべてのコメント", // Japanese
+            "Tutti i commenti".toLowerCase() // Italian
         ];
 
         return phrases.indexOf(s.trim().toLowerCase()) >= 0;
