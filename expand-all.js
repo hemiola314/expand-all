@@ -989,7 +989,11 @@ function setFilter2(link) {
             if (text.trim() != link.textContent.trim()) {
                 Global.log(window.filters_i + ": changing \u0027" + link.textContent.trim() + "\u0027 to \u0027" + text.trim() + "\u0027");
                 // clicking makes the link go away, so use link before clicking
-                const post = link.closest(ANY_ARTICLE);
+                let post = link.closest(ANY_ARTICLE);
+                if (!post) {
+                    post = link.closest(ROLE_MAIN);
+                }
+
                 menus[i].click();
                 window.setTimeout(() => setFilter3(post), 100);
                 return;
