@@ -15,6 +15,8 @@ const FS_ARTICLE = "[role=\"complementary\"]";
 const ANY_ARTICLE = POST_ARTICLE + "," + FS_ARTICLE;
 
 const VIDEO_FEED = "#watch_feed";
+
+// https://www.facebook.com/groups/CompuserveSYSOPs/posts/10157858262066056
 const ROLE_MAIN = "[role=\"main\"]";
 
 // 1: https://www.facebook.com/jens.farley
@@ -37,10 +39,10 @@ const FILTER_ITEM_INNER = "span";
 const CSS_LOGIN_STUFF = "._5hn6,[data-nosnippet]";
 
 const SM_COMMENT = "[dir=\"auto\"] [role=\"button\"]";
-const SEE_MORE_COMMENT = POST_ARTICLE + " " + SM_COMMENT + "," + FS_ARTICLE + " " + SM_COMMENT;
+const SEE_MORE_COMMENT = POST_ARTICLE + " " + SM_COMMENT + "," + FS_ARTICLE + " " + SM_COMMENT + "," + ROLE_MAIN + " " + SM_COMMENT;
 
 const SM_BASE = "div.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f";
-const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE;
+const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE + "," + ROLE_MAIN + " " + SM_BASE;
 
 const _NONE = "no-value";
 const _COMMENTS = "-comments";
@@ -459,18 +461,15 @@ class Root {
         const USE_PARENT = true;
 
         let check = [];
-        check.push([FS_ARTICLE, "Full-browser", USE_PARENT]);
+        check.push([FS_ARTICLE, "Full browser", !USE_PARENT]);
         check.push([ROLE_MAIN, "Main content area", !USE_PARENT]);
 
         check.find(item => {
             const divs = Dom.filterHidden(document.querySelectorAll(item[0]));
             let div = null;
-            if (divs.length == 1) {
+            if (divs.length > 0) {
+                // probably insane
                 div = divs[0];
-            }
-
-            if (divs.length == 2) {
-                div = divs[1];
             }
 
             if (!!div) {
@@ -503,8 +502,12 @@ class Root {
     }
 
     countPosts() {
-        let filter = Global.root.queryAll(ANY_ARTICLE);
-        return filter.length;
+        let result = this.rootNode.parentNode.querySelectorAll(ANY_ARTICLE).length;
+        if (result == 0 && this.rootNode.parentNode.querySelectorAll(ROLE_MAIN).length > 0) {
+            result = 1;
+        }
+
+        return result;
     }
 }
 
@@ -728,9 +731,19 @@ function clickClass(value, onDone) {
                 }
             }
 
-            // the new way of doing things
+            // a new way of doing things
+            // https://www.facebook.com/newspaperscom/
             if (item.previousSibling && item.previousSibling.previousSibling) {
                 let full = item.previousSibling.previousSibling.textContent;
+                if (full.charCodeAt(full.length - 1) === 8230) {
+                    return true;
+                }
+            }
+
+            // a new way of doing things
+            // https://www.facebook.com/ManresaRestaurant/
+            if (item.previousSibling && item.previousSibling.previousSibling && item.previousSibling.previousSibling.previousSibling) {
+                let full = item.previousSibling.previousSibling.previousSibling.textContent;
                 if (full.charCodeAt(full.length - 1) === 8230) {
                     return true;
                 }
@@ -928,10 +941,11 @@ function pumpOnce3(onDone) {
 
 function setFilter(onDone) {
     window.filters = Array.from(Global.root.queryAll(FILTER));
-    if (window.filters > Global.root.countPosts()) {
+    if (window.filters.length > Global.root.countPosts()) {
         Global.log("Something went wrong");
         Global.log("Not checking " + window.filters.length + " filter(s)");
-        if (onDone) onDone;
+        Global.log("countPosts " + Global.root.countPosts());
+        if (onDone) onDone();
         return;
     }
 
