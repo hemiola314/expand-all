@@ -39,10 +39,10 @@ const FILTER_ITEM_INNER = "span";
 const CSS_LOGIN_STUFF = "._5hn6,[data-nosnippet]";
 
 const SM_COMMENT = "[dir=\"auto\"] [role=\"button\"]";
-const SEE_MORE_COMMENT = POST_ARTICLE + " " + SM_COMMENT + "," + FS_ARTICLE + " " + SM_COMMENT + "," + ROLE_MAIN + " " + SM_COMMENT;
+const SEE_MORE_COMMENT = RESPONSE_COUNTER + " " + SM_COMMENT;
 
-const SM_BASE = "div.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f";
-const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE + "," + ROLE_MAIN + " " + SM_BASE;
+const SM_BASE = "div.x1s688f.xt0b8zv";
+const SEE_MORE_BASE = POST_ARTICLE + " " + SM_BASE + "," + FS_ARTICLE + " " + SM_BASE;
 
 const _NONE = "no-value";
 const _COMMENTS = "-comments";
@@ -706,12 +706,6 @@ function clickClass(value, onDone) {
             }
         }
 
-        if (value === SEE_MORE_COMMENT) {
-            if (!item.closest(RESPONSE_COUNTER)) {
-                return false;
-            }
-        }
-
         if (value === SEE_MORE_COMMENT || value === SEE_MORE_BASE) {
             // must have no child nodes
             if (!!item.childElementCount) {
@@ -1055,17 +1049,16 @@ class Actions {
             this.actions.push(onDone => setFilter(onDone));
         }
 
+        // see special case(s) in clickClass()
+        this.actions.push(onDone => clickClass(SEE_MORE_BASE, onDone));
+
         function seeMore(o) {
             // see special case(s) in clickClass()
             o.actions.push(onDone => clickClass(SEE_MORE_COMMENT, onDone));
         }
 
-        // see special case(s) in clickClass()
-        this.actions.push(onDone => clickClass(SEE_MORE_BASE, onDone));
         seeMore(this);
-
         this.actions.push(onDone => pumpOnce(onDone));
-
         seeMore(this);
 
         this.actions.push(Session.endSession);
