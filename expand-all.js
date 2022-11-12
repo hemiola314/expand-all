@@ -407,7 +407,6 @@ class LogWindow extends BaseWindow {
 class Root {
     constructor() {
         this.rootNode = document.body;
-        this.usingBody = true;
     }
 
     static removeOverlay() {
@@ -450,19 +449,13 @@ class Root {
             if (topOnly) {
                 Global.log(EXPANDING + "Topmost post");
                 this.rootNode = divv.parentNode;
-                this.usingBody = false;
+                return true;
             }
         }
 
-        if (!this.usingBody) {
-            return true;
-        }
-
-        const USE_PARENT = true;
-
         let check = [];
-        check.push([FS_ARTICLE, "Full browser", !USE_PARENT]);
-        check.push([ROLE_MAIN, "Main content area", !USE_PARENT]);
+        check.push([FS_ARTICLE, "Full browser"]);
+        check.push([ROLE_MAIN, "Main content area"]);
 
         check.find(item => {
             const divs = Dom.filterHidden(document.querySelectorAll(item[0]));
@@ -474,12 +467,7 @@ class Root {
 
             if (!!div) {
                 Global.log(EXPANDING + item[1]);
-                if (item[2] == USE_PARENT) {
-                    div = div.parentNode;
-                }
-
                 this.rootNode = div;
-                this.usingBody = false;
                 return true;
             }
         });
@@ -636,7 +624,8 @@ class Dom {
             /%20weergeven$/,  // Dutch (nl_NL)
             /%20bekijken$/,   // Dutch (nl_BE)
             /^Bekijk%20/,     // Dutch (nl_BE)
-            /^Δείτε%20/       // Greek
+            /^Δείτε%20/,      // Greek
+            /^הצג%20/         // Hebrew
         ];
 
         return words.some(re => { return s.match(re) != null; });
@@ -651,7 +640,8 @@ class Dom {
             "Все комментарии".toLowerCase(), // Russian
             "Όλα τα σχόλια".toLowerCase(), // Greek
             "すべてのコメント", // Japanese
-            "Tutti i commenti".toLowerCase() // Italian
+            "Tutti i commenti".toLowerCase(), // Italian
+            "כל התגובות".toLowerCase() // Hebrew
         ];
 
         return phrases.indexOf(s.trim().toLowerCase()) >= 0;
