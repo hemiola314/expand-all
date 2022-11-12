@@ -651,7 +651,8 @@ class Dom {
             "Все комментарии".toLowerCase(), // Russian
             "Όλα τα σχόλια".toLowerCase(), // Greek
             "すべてのコメント", // Japanese
-            "Tutti i commenti".toLowerCase() // Italian
+            "Tutti i commenti".toLowerCase(), // Italian
+            "כל התגובות".toLowerCase() // Hebrew
         ];
 
         return phrases.indexOf(s.trim().toLowerCase()) >= 0;
